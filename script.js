@@ -50,8 +50,8 @@ function renderButtons() {
     for (var i = 0; i < searchList.length; i++) {
         let render = $("<div>");
         render.addClass("row bg-light text-dark m-2 p-1")
-        render.text(searchList[i]);
-        $("#sideBar").append(render);
+        render.text(searchList[i].name);
+        $("#prevSearches").append(render);
     }
 }
 
