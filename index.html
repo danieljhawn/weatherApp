@@ -21,12 +21,14 @@
         <div class="row w-auto">
             <div class="col-4 bg-secondary m-2 text-white sideBar">
                 <h3 class="mt-2">Search for a city</h3>
-                <textarea class="form-control mb-1 search" rows="1" placeholder="Search"></textarea>
-                <button type="submit" id="searchBtn" class="btn btn-success">search</button>
+                <textarea id="searchForm" class="form-control mb-1 search" rows="1" placeholder="Search"></textarea>
+                <button id="searchBtn" class="btn btn-success">search</button>
             </div>
-            <div class="col-7 bg-secondary m-2 text-white mainBox">
-                <div class="row m-1 mt-3 p-1 bg-light text-dark">
-                    <h1>big card goes here</h1>
+            <div class="col-7 bg-secondary m-2 text-white">
+                <div class="row m-1 mt-3 p-1 bg-light text-dark mainBox">
+                    <h1 id="cityLast">city</h1>
+                    <br>
+                    <h6 id="tempLast"> degrees</h6>
                 </div>
                 <div class="row m-1 mb-3 p-1">
                     <div class="col mr-1 mt-1 mb-1 bg-light text-dark">
