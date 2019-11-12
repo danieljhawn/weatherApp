@@ -2,6 +2,8 @@ var lastCity = JSON.parse(localStorage.getItem('lastCity'));
 var lastUV = "";
 var lastForecast = JSON.parse(localStorage.getItem('lastForecast'));
 var searchList = [];
+var interval = setInterval(renderSearches, 1000);
+var interval = setInterval(populateMain, 1000);
 
 // this function takes the input from the search field and uses it to create an AJAX request
 function searchCity(city) {
@@ -11,7 +13,7 @@ function searchCity(city) {
         .then(function(searchData) {
             // console.log(searchData);
             // console.log(searchData.name);
-            uvIndex(searchData.coord.lat, searchData.coord.lon);
+            // uvIndex(searchData.coord.lat, searchData.coord.lon);
             localStorage.setItem('lastCity', JSON.stringify(searchData));
             searchList.push(searchData);
         })
@@ -23,21 +25,23 @@ function forecast(city) {
     $.ajax({ url: queryURL, method: "GET" })
         .then(function(searchData) {
             console.log(searchData);
-            uvIndex(searchData.city.coord.lat, searchData.city.coord.lon);
+            // uvIndex(searchData.city.coord.lat, searchData.city.coord.lon);
             localStorage.setItem('lastForecast', JSON.stringify(searchData));
         })
 }
 
-function uvIndex(lat, lon) {
-    let uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-    $.ajax({ url: uvi, method: "GET" })
-        .then(function(searchData) {
-            console.log(searchData);
+// function uvIndex(lat, lon) {
+//     let uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
+//     let lon = lastCity.coord.lon
+//     let lat = lastCity.coord.lat
+//     $.ajax({ url: uvi, method: "GET" })
+//         .then(function(searchData) {
+//             console.log(searchData);
 
-        })
+//         })
 
-}
-uvIndex();
+// }
+// uvIndex();
 
 $('#searchBtn').on('click', function() {
     let city = $("#searchForm").val()
@@ -52,7 +56,7 @@ function populateMain() {
     $("#tempLast").text(lastCity.main.temp + " Farenheit");
     $("#humiLast").text("Humidity: " + lastCity.main.humidity + " %");
     $("#speedLast").text(lastCity.wind.speed + " MPH");
-    $("#uvLast").text(lastCity.wind.speed + " MPH");
+    $("#uvLast").text(lastCity.coord);
 }
 populateMain();
 
