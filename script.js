@@ -1,5 +1,6 @@
 //this variable stores the last search as an object in localStorage
 var lastCity = JSON.parse(localStorage.getItem('lastCity'));
+var lastForecast = JSON.parse(localStorage.getItem('lastForecast'));
 var searchList = [];
 
 function searchCity(city) {
@@ -21,6 +22,8 @@ function forecast(city) {
     $.ajax({ url: queryURL, method: "GET" })
         .then(function(searchData) {
             console.log(searchData);
+            uvIndex(searchData.city.coord.lat, searchData.city.coord.lon);
+            localStorage.setItem('lastForecast', JSON.stringify(searchData));
         })
 }
 
@@ -33,9 +36,12 @@ $('#searchBtn').on('click', function() {
     console.log(city);
     searchCity(city);
     forecast(city);
-    populateMain();
-    renderButtons();
 })
+
+// $('#searchBtn').on('hover', function() {
+//     renderButtons();
+// })
+
 
 function populateMain() {
     $("#cityLast").text(lastCity.name);
@@ -45,11 +51,17 @@ function populateMain() {
 
 }
 
+function populateForecast(){
+    $("#day0").text(lastForecast.list[0].main.temp)
+
+}
+populateForecast();
+
 function renderButtons() {
     $("#prevSearches").empty();
     for (var i = 0; i < searchList.length; i++) {
         let render = $("<div>");
-        render.addClass("row bg-light text-dark m-2 p-1")
+        render.addClass("row bg-light text-dark m-1")
         render.text(searchList[i].name);
         $("#prevSearches").append(render);
     }
