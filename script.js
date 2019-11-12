@@ -36,12 +36,8 @@ $('#searchBtn').on('click', function() {
     console.log(city);
     searchCity(city);
     forecast(city);
+    renderButtons();
 })
-
-// $('#searchBtn').on('hover', function() {
-//     renderButtons();
-// })
-
 
 function populateMain() {
     $("#cityLast").text(lastCity.name);
