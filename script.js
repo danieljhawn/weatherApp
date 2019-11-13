@@ -2,23 +2,22 @@ var lastCity = JSON.parse(localStorage.getItem('lastCity'));
 var lastUV = "";
 var lastForecast = JSON.parse(localStorage.getItem('lastForecast'));
 var searchList = [];
-var interval = setInterval(renderSearches, 1000);
-var interval = setInterval(populateMain, 1000);
+// var lat = lastCity.coord.lat
+// var lon = lastCity.coord.lon
 
-// this function takes the input from the search field and uses it to create an AJAX request
+
+// this function takes the input from the search field and uses it to create an AJAX request. The response of that request gets saved to localStorage
 function searchCity(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
         // console.log(queryURL)
     $.ajax({ url: queryURL, method: "GET" })
         .then(function(searchData) {
-            // console.log(searchData);
-            // console.log(searchData.name);
-            // uvIndex(searchData.coord.lat, searchData.coord.lon);
             localStorage.setItem('lastCity', JSON.stringify(searchData));
             searchList.push(searchData);
         })
 }
 
+// this function is similar to the searchCity function, except it requests the forecast data.
 function forecast(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
         // console.log(queryURL)
@@ -32,16 +31,15 @@ function forecast(city) {
 
 // function uvIndex(lat, lon) {
 //     let uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-//     let lon = lastCity.coord.lon
-//     let lat = lastCity.coord.lat
+//         // let lon = lastCity.coord.lon
+//         // let lat = lastCity.coord.lat
 //     $.ajax({ url: uvi, method: "GET" })
 //         .then(function(searchData) {
 //             console.log(searchData);
-
 //         })
-
 // }
 // uvIndex();
+
 
 $('#searchBtn').on('click', function() {
     let city = $("#searchForm").val()
@@ -56,7 +54,7 @@ function populateMain() {
     $("#tempLast").text(lastCity.main.temp + " Farenheit");
     $("#humiLast").text("Humidity: " + lastCity.main.humidity + " %");
     $("#speedLast").text(lastCity.wind.speed + " MPH");
-    $("#uvLast").text(lastCity.coord);
+    $("#uvLast").text();
 }
 populateMain();
 
@@ -97,6 +95,9 @@ function renderSearches() {
         let render = $("<div>");
         render.addClass("row bg-light text-dark mb-2 p-2")
         render.text(searchList[i].name);
-        $("#prevSearches").append(render);
+        $("#prevSearches").prepend(render);
     }
 }
+
+setInterval(renderSearches, 100);
+window.setInterval(populateMain, 100);
