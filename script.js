@@ -1,5 +1,5 @@
 var lastCity = JSON.parse(localStorage.getItem('lastCity'));
-var lastUV = "";
+var lastUV = JSON.parse(localStorage.getItem('lastUV'));
 var lastForecast = JSON.parse(localStorage.getItem('lastForecast'));
 var searchList = [];
 // var lat = lastCity.coord.lat
@@ -36,6 +36,7 @@ function uvIndex(lat, lon) {
     $.ajax({ url: uvi, method: "GET" })
         .then(function(searchData) {
             console.log(searchData);
+            localStorage.setItem('lastUV', JSON.stringify(searchData));
         })
 }
 uvIndex();
@@ -67,7 +68,7 @@ function populateMain() {
     $("#tempLast").text(lastCity.main.temp + " Farenheit");
     $("#humiLast").text("Humidity: " + lastCity.main.humidity + " %");
     $("#speedLast").text(lastCity.wind.speed + " MPH");
-    $("#uvLast").text();
+    $("#uvLast").text("UV Index: " + lastUV.value);
 }
 populateMain();
 
