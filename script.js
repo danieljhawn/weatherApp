@@ -6,7 +6,7 @@ var searchList = [];
 // var lon = lastCity.coord.lon
 
 
-// this function takes the input from the search field and uses it to create an AJAX request. The response of that request gets saved to localStorage
+// takes the input from the search field and uses it to create an AJAX request. The response of that request gets saved to localStorage
 function searchCity(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
         // console.log(queryURL)
@@ -17,7 +17,7 @@ function searchCity(city) {
         })
 }
 
-// this function is similar to the searchCity function, except it requests the forecast data.
+// similar to the searchCity function, except it requests the forecast data.
 function forecast(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
         // console.log(queryURL)
@@ -29,25 +29,38 @@ function forecast(city) {
         })
 }
 
-// function uvIndex(lat, lon) {
-//     let uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-//         // let lon = lastCity.coord.lon
-//         // let lat = lastCity.coord.lat
-//     $.ajax({ url: uvi, method: "GET" })
-//         .then(function(searchData) {
-//             console.log(searchData);
-//         })
-// }
-// uvIndex();
+function uvIndex(lat, lon) {
+    var lon = lastCity.coord.lon
+    var lat = lastCity.coord.lat
+    var uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
+    $.ajax({ url: uvi, method: "GET" })
+        .then(function(searchData) {
+            console.log(searchData);
+        })
+}
+uvIndex();
 
-
+// takes the value of whatever is in the search box and applies it to several functions
 $('#searchBtn').on('click', function() {
     let city = $("#searchForm").val()
     console.log(city);
     searchCity(city);
     forecast(city);
-    renderSearches();
+    populateMain(city);
 })
+
+// $('.searched').on('click', function loadSearch(searched) {
+//     let queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${searched}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
+//     let searched = $(this).text()
+//     $.ajax({ url: queryURL, method: "GET" })
+//         .then(function(searchData) {
+//             $("#cityLast").text(searchData.name);
+//             $("#tempLast").text(searchData.main.temp + " Farenheit");
+//             $("#humiLast").text("Humidity: " + searchData.main.humidity + " %");
+//             $("#speedLast").text(searchData.wind.speed + " MPH");
+//             $("#uvLast").text();
+//         })
+// })
 
 function populateMain() {
     $("#cityLast").text(lastCity.name);
@@ -93,7 +106,7 @@ function renderSearches() {
     $("#prevSearches").empty();
     for (var i = 0; i < searchList.length; i++) {
         let render = $("<div>");
-        render.addClass("row bg-light text-dark mb-2 p-2")
+        render.addClass("row bg-light text-dark mb-2 p-2 searched")
         render.text(searchList[i].name);
         $("#prevSearches").prepend(render);
     }
