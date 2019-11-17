@@ -1,82 +1,72 @@
-var lastCity = JSON.parse(localStorage.getItem('lastCity'));
-var lastUV = JSON.parse(localStorage.getItem('lastUV'));
-var lastForecast = JSON.parse(localStorage.getItem('lastForecast'));
-var searchList = [];
-// var lat = lastCity.coord.lat
-// var lon = lastCity.coord.lon
-
+// storing a list of searched cities to localStorage and calling the function renderSearches to load them to the sidebar
+var searchList = JSON.parse(localStorage.getItem('searchList')) || [];
+console.log(searchList);
+if (searchList.length > 0) {
+    searchCity(searchList[searchList.length - 1]);
+    forecast(searchList[searchList.length - 1]);
+}
+renderSearches();
 
 // takes the input from the search field and uses it to create an AJAX request. The response of that request gets saved to localStorage.
 function searchCity(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-        // console.log(queryURL)
+    // console.log(queryURL)
     $.ajax({ url: queryURL, method: "GET" })
-        .then(function(searchData) {
-            localStorage.setItem('lastCity', JSON.stringify(searchData));
-            searchList.push(searchData);
+        .then(function (searchData) {
+            // localStorage.setItem('lastCity', JSON.stringify(searchData));
+            // searchList.push(searchData);
+            populateMain(searchData);
+            uvIndex(searchData.coord.lat, searchData.coord.lon);
         })
 };
 
 // similar to the searchCity function, except it requests the forecast data.
 function forecast(city) {
     let queryURL = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-        // console.log(queryURL)
+    // console.log(queryURL)
     $.ajax({ url: queryURL, method: "GET" })
-        .then(function(searchData) {
+        .then(function (searchData) {
             console.log(searchData);
             // uvIndex(searchData.city.coord.lat, searchData.city.coord.lon);
-            localStorage.setItem('lastForecast', JSON.stringify(searchData));
+            // localStorage.setItem('lastForecast', JSON.stringify(searchData));
+            populateForecast(searchData);
+
         })
 };
+
 // similar to searchCity and forecast functions, but it makes a different API call with longitude and latitude. Once again, storing in localStorage.
 function uvIndex(lat, lon) {
-    var lon = lastCity.coord.lon
-    var lat = lastCity.coord.lat
     var uvi = `http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
     $.ajax({ url: uvi, method: "GET" })
-        .then(function(searchData) {
+        .then(function (searchData) {
             console.log(searchData);
-            localStorage.setItem('lastUV', JSON.stringify(searchData));
+            // localStorage.setItem('lastUV', JSON.stringify(searchData));
+            populateUV(searchData.value);
         })
 }
-uvIndex();
 
 // takes the value of whatever is in the search box and applies it to several functions.
-$('#searchBtn').on('click', function() {
-    let city = $("#searchForm").val()
+$('#searchBtn').on('click', function () {
+    let city = $("#searchForm").val();
     console.log(city);
     searchCity(city);
     forecast(city);
-    populateMain(city);
+    searchList.push(city);
+    localStorage.setItem('searchList', JSON.stringify(searchList));
+    renderSearches();
 });
 
-// $('.searched').on('click', function loadSearch(searched) {
-//     let queryURL = `http://api.openweathermap.org/data/2.5/weather?q=${searched}&APPID=a01fee2d80b973ab3b18ce1990905e04&units=imperial`
-//     let searched = $(this).text()
-//     $.ajax({ url: queryURL, method: "GET" })
-//         .then(function(searchData) {
-//             $("#cityLast").text(searchData.name);
-//             $("#tempLast").text(searchData.main.temp + " Farenheit");
-//             $("#humiLast").text("Humidity: " + searchData.main.humidity + " %");
-//             $("#speedLast").text(searchData.wind.speed + " MPH");
-//             $("#uvLast").text();
-//         })
-// })
 
 // grabs the data stored in localStorage and adds each detail to my main window.
-function populateMain() {
+function populateMain(lastCity) {
     $("#cityLast").text(lastCity.name);
     $("#tempLast").text(lastCity.main.temp + " Farenheit");
     $("#humiLast").text("Humidity: " + lastCity.main.humidity + " %");
     $("#speedLast").text(lastCity.wind.speed + " MPH");
-    $("#uvLast").text("UV Index: " + lastUV.value);
 }
-populateMain();
 
 // similar to populateMain, but this adds the 5 day forecast.
-function populateForecast() {
-    let dateShort = JSON.parse(localStorage.getItem('lastForecast'))
-
+function populateForecast(dateShort) {
     $("#day0 > .fdate").text(dateShort.list[0].dt_txt.slice(0, 10))
     $("#day0 > .ficon").html(dateShort.list[0].weather.icon)
     $("#day0 > .ftemp").text(dateShort.list[0].main.temp + " F")
@@ -103,16 +93,28 @@ function populateForecast() {
     $("#day4 > .fhumidity").text(dateShort.list[32].main.humidity + "%")
 
 }
-populateForecast();
+// populateForecast();
 
+// same as other populate function, but uses latitude and longitude as the parameters
+function populateUV(index) {
+    $("#uvLast").text("UV Index: " + index);
+}
+
+// loads the list of searches into the sidebar
 function renderSearches() {
     $("#prevSearches").empty();
     for (var i = 0; i < searchList.length; i++) {
         let render = $("<div>");
         render.addClass("row bg-light text-dark mb-2 p-2 searched")
-        render.text(searchList[i].name);
+        render.text(searchList[i]);
         $("#prevSearches").prepend(render);
     }
 };
 
-setInterval(renderSearches, 100);
+// event listener, takes previous searches and loads them into the main window
+$(document).on('click', 'div.searched', function(){
+    console.log('clicked');
+    let city = $(this).text();
+    searchCity(city);
+    forecast(city);
+})
